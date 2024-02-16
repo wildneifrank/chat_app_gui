@@ -7,6 +7,7 @@ const URL = "http://localhost:8080/";
 const CURRENT_NAME = "wildnei"
 
 function App() {
+  const [message, setMessage] = useState("")
   const [messages, setMessages] = useState([]);
   const [users, setUsers] = useState([])
   const [existsData, setExistsData] = useState(false)
@@ -22,6 +23,19 @@ function App() {
       console.log(error);
     }
   };
+  const postData = async () =>{
+    try {
+      const res = await axios.post(URL, {
+        text: message,
+        user_name: CURRENT_NAME
+      })
+      setMessage("");
+      console.log(res.data) 
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   useEffect(() => {
     const intervalId = setInterval(() => {
       getData();
@@ -53,6 +67,7 @@ function App() {
         className="w-full px-10 py-5 flex bg-slate-800 gap-4"
         onSubmit={(e) => {
           e.preventDefault();
+          postData();
         }}
       >
         <input
@@ -61,6 +76,11 @@ function App() {
           id="text"
           placeholder="Type your message..."
           required
+          autoComplete="off"
+          value={message}
+          onChange={(e) => {
+            setMessage(e.target.value);
+          }}
           className="bg-transparent px-3 py-2 outline-none rounded-md border-slate-500 border text-white flex-1 text-lg font-semibold"
         />
         <button
