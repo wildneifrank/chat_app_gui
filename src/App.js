@@ -10,7 +10,7 @@ function App() {
   return (
     <div className="App w-screen min-h-screen bg-slate-700">
       <ToastContainer position="bottom-left" autoClose={3000}/>
-      {currentName ? <Chat/> : <Login toast={toast} setCurrentName={setCurrentName}/>}
+      {currentName ? <Chat currentName={currentName}/> : <Login toast={toast} setCurrentName={setCurrentName}/>}
       
     </div>
     

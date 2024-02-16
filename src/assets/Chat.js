@@ -4,9 +4,8 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 
 const URL = "http://localhost:8080/";
-const CURRENT_NAME = "wildnei";
 
-function Chat() {
+function Chat({currentName}) {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [users, setUsers] = useState([]);
@@ -27,7 +26,7 @@ function Chat() {
     try {
       const res = await axios.post(URL, {
         text: message,
-        user_name: CURRENT_NAME,
+        user_name: currentName,
       });
       setMessage("");
       console.log(res.data);
@@ -55,7 +54,7 @@ function Chat() {
         {existsData
           ? messages.map((item, index) => {
               const userName = findUserName(item.user);
-              if (userName.toLowerCase() == CURRENT_NAME) {
+              if (userName.toLowerCase() == currentName.toLowerCase()) {
                 return <MessageSent key={index} text={item.text} />;
               } else {
                 return (
