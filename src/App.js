@@ -4,45 +4,50 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 
 const URL = "http://localhost:8080/";
+const CURRENT_NAME = "wildnei"
 
 function App() {
   const [messages, setMessages] = useState([]);
   const [users, setUsers] = useState([])
+  const [existsData, setExistsData] = useState(false)
   const getData = async () => {
     try {
       const res = await axios.get(URL);
-      setMessages(res.data.messages);
-      setUsers(res.data.users)
-      console.log("res.data", res.data);
+      if(res.data.messages){
+        setMessages(res.data.messages);
+        setUsers(res.data.users)
+        setExistsData(true)
+      }
     } catch (error) {
       console.log(error);
     }
   };
   useEffect(() => {
-    getData();
+    const intervalId = setInterval(() => {
+      getData();
+    }, 1000); // Request every 1 second
+
+    return () => clearInterval(intervalId); // Cleanup function to clear the interval on unmount
+
   }, []);
 
-  const findUser = (id) => {
+  const findUserName = (id) => {
     const user = users.filter((user) => user.id == id)
     return user[0].name;
   }
   return (
-    <div className="App w-screen min-h-screen bg-slate-700 flex flex-col  ">
-      <div className="w-full flex flex-col gap-3 px-16 py-10 flex-1">
-        {messages.map((item, index) => {
-          return <MessageReceived name={findUser(item.user)} text={item.text} key={index}/>;
-        })}
-        <MessageReceived
-          name={"Name"}
-          text={
-            "Lorem ipsum dolor sit amet consectetur adipisicing elit. Vel,dignissimos maiores! Ipsam unde, optio qui veritatis eveniet inomnis expedita deserunt, quia velit debitis sapiente blanditiisaccusamus itaque."
+    <div className="App w-screen min-h-screen bg-slate-700 flex flex-col max-w-[-webkit-fill-available]">
+      <div className="w-full flex flex-col gap-3 px-16 py-10 flex-1 overflow-y-scroll max-h-[91vh]">
+        {existsData ? (messages.map((item, index) => {
+          const userName = findUserName(item.user)
+          if(userName.toLowerCase() == CURRENT_NAME){
+            return <MessageSent key={index} text={item.text}/>
           }
-        />
-        <MessageSent
-          text={
-            "Lorem ipsum dolor sit amet consectetur adipisicing elit. Vel,dignissimos maiores! Ipsam unde, optio qui veritatis eveniet inomnis expedita deserunt, quia velit debitis sapiente blanditiisaccusamus itaque ipsum."
+          else{
+            return <MessageReceived name={userName} text={item.text} key={index}/>;
           }
-        />
+        })) : null}
+
       </div>
       <form
         className="w-full px-10 py-5 flex bg-slate-800 gap-4"
